@@ -1,4 +1,4 @@
-#+title Logan's emacs configuration
+#+title: Logan's emacs configuration
 #+PROPERTY: header-args:emacs-lisp :tangle ./init.el
 
 * Background
@@ -7,7 +7,7 @@ I was originally inspired to organize my dot files after watching the series: [[
 
 * Package
 
-For package management I will be using package (builtin) and [[https://github.com/jwiegley/use-package][use-package]].  
+For package management I will be using package (builtin) and [[https://github.com/jwiegley/use-package][use-package]].
 #+begin_src emacs-lisp
 
 (require 'package)
@@ -115,7 +115,7 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
     :diminish
     :bind (("C-s" . swiper)
            :map ivy-minibuffer-map
-           ("TAB" . ivy-alt-done)	
+           ("TAB" . ivy-alt-done)
            ("C-l" . ivy-alt-done)
            ("C-j" . ivy-next-line)
            ("C-k" . ivy-previous-line)
@@ -191,7 +191,7 @@ General sets up C-<SPACE> as a leader key. Right now the following are supported
 
 - tt: theme picker (doom)
 - ts: text scaling
-  
+
   #+begin_src emacs-lisp
 
     (use-package general
@@ -243,7 +243,7 @@ General sets up C-<SPACE> as a leader key. Right now the following are supported
 
   (general-define-key
    "C-M-j" 'counsel-switch-buffer)
-  ;; 
+  ;;
   (use-package evil-collection
     :after evil
     :config
