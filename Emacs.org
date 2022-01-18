@@ -168,8 +168,175 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
 
 #+end_src
 
+* Helpful
 
 #+begin_src emacs-lisp
+  (use-package helpful
+    :ensure t
+    :custom
+    (counsel-describe-function-function #'helpful-callable)
+    (counsel-describe-variable-function #'helpful-variable)
+    :bind
+    ([remap describe-function] . counsel-describe-function)
+    ([remap describe-command] . helpful-command)
+    ([remap describe-variable] . counsel-describe-variable)
+    ([remap describe-key] . helpful-key))
+#+end_src
+
+* Keybindings
+
+** General/Hydra
+
+General sets up C-<SPACE> as a leader key. Right now the following are supported.
+
+- tt: theme picker (doom)
+- ts: text scaling
+  
+  #+begin_src emacs-lisp
+
+    (use-package general
+      :config
+      (general-create-definer logan/leader-keys
+        :keymaps '(normal insert visual emacs)
+        :prefix "C-SPC")
+        ;; :global-prefix "C-SPC")
+
+      (logan/leader-keys
+       "t" '(:ignore t :which-key "toggles")
+       "tt" '(counsel-load-theme :which-key "choose theme")))
+
+    (use-package hydra)
+
+    ;; a way to zoom in and out
+    (defhydra hydra-text-scale (:timeout 4)
+         "scale text"
+         ("j" text-scale-increase "in")
+         ("k" text-scale-decrease "out")
+         ("d" (text-scale-adjust 0) "default")
+         ("f" nil "finished" :exit t))
+
+    (logan/leader-keys
+      "ts" '(hydra-text-scale/body :which-key "scale text"))
+
+  #+end_src
+
+** Evil Mode
+#+begin_src emacs-lisp
+
+  (use-package evil
+    :init
+    (setq evil-want-integration t)
+    (setq evil-want-keybinding nil)
+    (setq evil-want-C-u-scroll t)
+    (setq evil-want-C-i-jump nil)
+    :config
+    (evil-mode 1)
+    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+
+    ;; Use visual line motions even outside of visual-line-mode buffers
+    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+    (evil-set-initial-state 'messages-buffer-mode 'normal)
+    (evil-set-initial-state 'dashboard-mode 'normal))
+
+  (general-define-key
+   "C-M-j" 'counsel-switch-buffer)
+  ;; 
+  (use-package evil-collection
+    :after evil
+    :config
+    (evil-collection-init))
+#+end_src
+
+* Projectile
+#+begin_src emacs-lisp
+  (use-package projectile
+    :diminish projectile-mode
+    :config (projectile-mode)
+    :custom ((projectile-completion-system 'ivy))
+    :bind-keymap
+    ("C-c p" . projectile-command-map)
+    :init
+    (when (file-directory-p "~/work/frameable")
+      (setq projectile-project-search-path '("~/work/frameable")))
+    (setq projectile-switch-project-action #'projectile-dired))
+
+  (use-package counsel-projectile
+    :config (counsel-projectile-mode))
+#+end_src
+
+
+* Git (Magit/Forge)
+
+#+begin_src emacs-lisp
+  (use-package magit
+    :custom
+    (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+  ;; read up on more
+  (use-package forge)
+
+#+end_src
+
+* Org Mode
+#+begin_src emacs-lisp
+(defun logan/org-mode-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1) ;; This can affect tables/sql etc
+  (visual-line-mode 1)
+  (dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1)))
+    ;; (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+    (set-face-attribute (car face) nil :weight 'regular :height (cdr face)))
+  (dolist (face '(org-table))
+
+    (set-face-attribute face nil :inherit 'fixed-pitch))
+  (setq evil-auto-ident nil))
+
+;; org notifier look into
+(use-package org
+  :hook (org-mode . logan/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾"
+        org-hide-emphasis-markers t)
+  (setq org-agenda-start-with-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+;;  (setq org-agenda-files
+;;	'("~/work/personal/emacs/org-files/Tasks.org"
+;;	  "~/work/personal/emacs/org-files/Birthdays.org"))
+  (logan/org-mode-setup))
+
+(use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+;; this will disable line numbers
+(defun logan/org-mode-visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :hook (org-mode . logan/org-mode-visual-fill))
+
+#+end_src
+
+* Tempo
+
+#+begin_src emacs-lisp
+
+
   (require 'org-tempo)
 
   (add-to-list 'org-structure-template-alist '("sh" . "src shell"))
@@ -178,6 +345,20 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
 
 #+end_src
 
+
+#+begin_src emacs-lisp
+  (defun logan/org-babel-tangle-config ()
+    (when (string-equal (buffer-file-name)
+                        (expand-file-name "~/work/personal/.dotfiles/Emacs.org"))
+
+      ;; Dynamic scoping to the rescue
+      (let ((org-confirm-babel-evaluate nil))
+        (org-babel-tangle))))
+
+  (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'logan/org-babel-tangle-config)))
+#+end_src
+
+* Babel
 #+begin_src emacs-lisp
 
   (org-babel-do-load-languages
