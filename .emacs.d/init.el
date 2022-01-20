@@ -241,6 +241,24 @@
 (use-package company-box
   :hook (company-mode . company-box-mode))
 
+(use-package js2-mode
+  :ensure t
+  :init
+  (setq js-basic-indent 2)
+  (setq-default js2-basic-indent 2
+                js2-basic-offset 2
+                js2-auto-indent-p t
+                js2-cleanup-whitespace t
+                js2-enter-indents-newline t
+                js2-indent-on-enter-key t
+                js2-global-externs (list "window" "module" "require" "buster" "sinon" "assert" "refute" "setTimeout" "clearTimeout" "setInterval" "clearInterval" "location" "__dirname" "console" "JSON" "jQuery" "$"))
+
+  (add-hook 'js2-mode-hook
+            (lambda ()
+              (push '("function" . ?ƒ) prettify-symbols-alist)))
+
+  (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode)))
+
 (use-package magit
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
@@ -319,16 +337,3 @@
    (python . t )))
 
 (setq org-confirm-babel-evaluate nil)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(which-key visual-fill-column use-package typescript-mode smart-tab rainbow-delimiters org-bullets lsp-ui lsp-treemacs lsp-ivy ivy-rich helpful general forge evil-collection doom-themes doom-modeline counsel-projectile company-box)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
