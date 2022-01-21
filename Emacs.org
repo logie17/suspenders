@@ -12,6 +12,7 @@ I was originally inspired to organize my dot files after watching the series: [[
   (setenv "PATH" (concat (getenv "PATH") ":/home/logan/.nvm/versions/node/v14.16.1/bin"))
   (setq exec-path (append exec-path '("/home/logan/.nvm/versions/node/v14.16.1/bin")))
 
+  (server-start)
 
 #+end_src
 * Package
@@ -232,31 +233,31 @@ General sets up C-<SPACE> as a leader key. Right now the following are supported
 ** Evil Mode
 #+begin_src emacs-lisp
 
-  (use-package evil
-    :init
-    (setq evil-want-integration t)
-    (setq evil-want-keybinding nil)
-    (setq evil-want-C-u-scroll t)
-    (setq evil-want-C-i-jump nil)
-    :config
-    (evil-mode 1)
-    (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-    (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+  ;; (use-package evil
+  ;;   :init
+  ;;   (setq evil-want-integration t)
+  ;;   (setq evil-want-keybinding nil)
+  ;;   (setq evil-want-C-u-scroll t)
+  ;;   (setq evil-want-C-i-jump nil)
+  ;;   :config
+  ;;   (evil-mode 1)
+  ;;   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+  ;;   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
 
-    ;; Use visual line motions even outside of visual-line-mode buffers
-    (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-    (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+  ;;   ;; Use visual line motions even outside of visual-line-mode buffers
+  ;;   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  ;;   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-    (evil-set-initial-state 'messages-buffer-mode 'normal)
-    (evil-set-initial-state 'dashboard-mode 'normal))
+  ;;   (evil-set-initial-state 'messages-buffer-mode 'normal)
+  ;;   (evil-set-initial-state 'dashboard-mode 'normal))
 
-  (general-define-key
-   "C-M-j" 'counsel-switch-buffer)
-  ;;
-  (use-package evil-collection
-    :after evil
-    :config
-    (evil-collection-init))
+  ;; (general-define-key
+  ;;  "C-M-j" 'counsel-switch-buffer)
+  ;; ;;
+  ;; (use-package evil-collection
+  ;;   :after evil
+  ;;   :config
+  ;;   (evil-collection-init))
 #+end_src
 
 * Projectile
@@ -327,23 +328,58 @@ General sets up C-<SPACE> as a leader key. Right now the following are supported
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package js2-mode
-  :ensure t
-  :init
-  (setq js-basic-indent 2)
-  (setq-default js2-basic-indent 2
-                js2-basic-offset 2
-                js2-auto-indent-p t
-                js2-cleanup-whitespace t
-                js2-enter-indents-newline t
-                js2-indent-on-enter-key t
-                js2-global-externs (list "window" "module" "require" "buster" "sinon" "assert" "refute" "setTimeout" "clearTimeout" "setInterval" "clearInterval" "location" "__dirname" "console" "JSON" "jQuery" "$"))
+  (use-package js2-mode
+    :ensure t
+    :config
+    (setq js2-bounce-indent-flag nil
+          js2-cleanup-whitespace t
+          js2-indent-on-enter-key t)
 
-  (add-hook 'js2-mode-hook
-            (lambda ()
-              (push '("function" . ?ƒ) prettify-symbols-alist)))
+    :init
+    (setq js2-mirror-mode nil)
+    (setq js2-mode-indent-ignore-first-tab t)
+    (setq js2-strict-inconsistent-return-warning nil)
+    (setq js2-strict-missing-semi-warning nil)
+    (setq js2-basic-offset 2)
+    (setq js-switch-indent-offset 2)
 
-  (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode)))
+    ;;js settings (for json)
+    (setq js-indent-level 2)
+
+    (setq js-basic-indent 2)
+    (setq-default js2-basic-indent 2
+                  js2-basic-offset 2
+                  js2-auto-indent-p t
+                  js2-cleanup-whitespace t
+                  js2-enter-indents-newline t
+                  js2-indent-on-enter-key t
+                  js2-global-externs (list "window" "module" "require" "buster" "sinon" "assert" "refute" "setTimeout" "clearTimeout" "setInterval" "clearInterval" "location" "__dirname" "console" "JSON" "jQuery" "$"))
+
+    (add-hook 'js2-mode-hook
+              (lambda ()
+                (push '("function" . ?ƒ) prettify-symbols-alist)))
+
+    (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode)))
+
+  (use-package web-mode
+    :ensure t
+    :init
+    (setq web-mode-engines-alist
+          '(("ctemplate"    . "\\.html\\'")
+            ("ctemplate"    . "\\.vue\\'")
+            ("ctemplate"    . "\\.html.erb\\'")))
+    (setq web-mode-markup-indent-offset 2)
+    (setq web-mode-code-indent-offset 2)
+    (setq web-mode-css-indent-offset 2)
+    (setq web-mode-enable-auto-indentation nil)
+    (setq web-mode-script-padding 0)
+    (setq web-mode-style-padding 2))
+
+  (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.html.erb\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.hbs\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
+
 #+end_src
 * Git (Magit/Forge)
 

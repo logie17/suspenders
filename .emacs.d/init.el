@@ -2,6 +2,8 @@
 (setenv "PATH" (concat (getenv "PATH") ":/home/logan/.nvm/versions/node/v14.16.1/bin"))
 (setq exec-path (append exec-path '("/home/logan/.nvm/versions/node/v14.16.1/bin")))
 
+(server-start)
+
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")
@@ -160,31 +162,31 @@
 (logan/leader-keys
   "ts" '(hydra-text-scale/body :which-key "scale text"))
 
-(use-package evil
-  :init
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-C-u-scroll t)
-  (setq evil-want-C-i-jump nil)
-  :config
-  (evil-mode 1)
-  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+;; (use-package evil
+;;   :init
+;;   (setq evil-want-integration t)
+;;   (setq evil-want-keybinding nil)
+;;   (setq evil-want-C-u-scroll t)
+;;   (setq evil-want-C-i-jump nil)
+;;   :config
+;;   (evil-mode 1)
+;;   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+;;   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
 
-  ;; Use visual line motions even outside of visual-line-mode buffers
-  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+;;   ;; Use visual line motions even outside of visual-line-mode buffers
+;;   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+;;   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
 
-  (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal))
+;;   (evil-set-initial-state 'messages-buffer-mode 'normal)
+;;   (evil-set-initial-state 'dashboard-mode 'normal))
 
-(general-define-key
- "C-M-j" 'counsel-switch-buffer)
-;;
-(use-package evil-collection
-  :after evil
-  :config
-  (evil-collection-init))
+;; (general-define-key
+;;  "C-M-j" 'counsel-switch-buffer)
+;; ;;
+;; (use-package evil-collection
+;;   :after evil
+;;   :config
+;;   (evil-collection-init))
 
 (use-package projectile
   :diminish projectile-mode
@@ -243,7 +245,22 @@
 
 (use-package js2-mode
   :ensure t
+  :config
+  (setq js2-bounce-indent-flag nil
+        js2-cleanup-whitespace t
+        js2-indent-on-enter-key t)
+
   :init
+  (setq js2-mirror-mode nil)
+  (setq js2-mode-indent-ignore-first-tab t)
+  (setq js2-strict-inconsistent-return-warning nil)
+  (setq js2-strict-missing-semi-warning nil)
+  (setq js2-basic-offset 2)
+  (setq js-switch-indent-offset 2)
+
+  ;;js settings (for json)
+  (setq js-indent-level 2)
+
   (setq js-basic-indent 2)
   (setq-default js2-basic-indent 2
                 js2-basic-offset 2
@@ -258,6 +275,25 @@
               (push '("function" . ?ƒ) prettify-symbols-alist)))
 
   (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode)))
+
+(use-package web-mode
+  :ensure t
+  :init
+  (setq web-mode-engines-alist
+        '(("ctemplate"    . "\\.html\\'")
+          ("ctemplate"    . "\\.vue\\'")
+          ("ctemplate"    . "\\.html.erb\\'")))
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-enable-auto-indentation nil)
+  (setq web-mode-script-padding 0)
+  (setq web-mode-style-padding 2))
+
+(add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.hbs\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
 
 (use-package magit
   :custom
