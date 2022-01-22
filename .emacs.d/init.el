@@ -68,7 +68,10 @@
   ;; Currently not used
 (defvar logan/default-font-size 180)
 (defvar logan/default-variable-font-size 180)
-;; (set-face-attribute 'default nil :font "Fira Code" :height 280)
+(set-face-attribute 'default nil :font "Jet Brains Mono" :height 130)
+(set-face-attribute 'fixed-pitch nil :font "Jet Brains Mono" :height 130)
+(set-face-attribute 'variable-pitch nil :font "FreeSerif" :height 130 :weight 'regular)
+
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
@@ -96,7 +99,6 @@
          ("C-d" . ivy-reverse-i-search-kill))
   :config
   (ivy-mode 1))
-
 
 (use-package ivy-rich
   :init
@@ -138,54 +140,6 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
-(use-package general
-  :config
-  (general-create-definer logan/leader-keys
-    :prefix "s-s"))
-
-  (logan/leader-keys
-   "t" '(:ignore t :which-key "toggles")
-   "tt" '(counsel-load-theme :which-key "choose theme"))
-
-(use-package hydra)
-
-;; a way to zoom in and out
-(defhydra hydra-text-scale (:timeout 4)
-     "scale text"
-     ("j" text-scale-increase "in")
-     ("k" text-scale-decrease "out")
-     ("d" (text-scale-adjust 0) "default")
-     ("f" nil "finished" :exit t))
-
-(logan/leader-keys
-  "ts" '(hydra-text-scale/body :which-key "scale text"))
-
-;; (use-package evil
-;;   :init
-;;   (setq evil-want-integration t)
-;;   (setq evil-want-keybinding nil)
-;;   (setq evil-want-C-u-scroll t)
-;;   (setq evil-want-C-i-jump nil)
-;;   :config
-;;   (evil-mode 1)
-;;   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-;;   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-
-;;   ;; Use visual line motions even outside of visual-line-mode buffers
-;;   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
-;;   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
-
-;;   (evil-set-initial-state 'messages-buffer-mode 'normal)
-;;   (evil-set-initial-state 'dashboard-mode 'normal))
-
-;; (general-define-key
-;;  "C-M-j" 'counsel-switch-buffer)
-;; ;;
-;; (use-package evil-collection
-;;   :after evil
-;;   :config
-;;   (evil-collection-init))
-
 (use-package projectile
   :diminish projectile-mode
   :config (projectile-mode)
@@ -199,6 +153,23 @@
 
 (use-package counsel-projectile
   :config (counsel-projectile-mode))
+
+(defvar logan-cracklib-dict nil)
+(defun logan/read-cracklib-dict ()
+  "Reads the cracklib small db"
+  (when (null logan-cracklib-dict)
+    (with-temp-buffer
+        (insert-file-contents "/usr/share/dict/cracklib-small")
+        (setq logan-cracklib-dict (split-string (buffer-string) "\n" t)))))
+
+(defun logan/random-string ()
+  (interactive)
+  (logan/read-cracklib-dict)
+  (insert (nth (random (length logan-cracklib-dict)) logan-cracklib-dict )))
+
+(defun logan/open-emacs-org-file()
+  (interactive)
+  (find-file "~/work/personal/.dotfiles/Emacs.org"))
 
 (defun logan/lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
@@ -293,6 +264,54 @@
 (add-to-list 'auto-mode-alist '("\\.hbs\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
 
+(use-package general
+  :config
+  (general-create-definer logan/leader-keys
+    :prefix "s-s"))
+
+  (logan/leader-keys
+   "t" '(:ignore t :which-key "toggles")
+   "tt" '(counsel-load-theme :which-key "choose theme"))
+
+(use-package hydra)
+
+;; a way to zoom in and out
+(defhydra hydra-text-scale (:timeout 4)
+     "scale text"
+     ("j" text-scale-increase "in")
+     ("k" text-scale-decrease "out")
+     ("d" (text-scale-adjust 0) "default")
+     ("f" nil "finished" :exit t))
+
+(logan/leader-keys
+  "ts" '(hydra-text-scale/body :which-key "scale text"))
+
+;; (use-package evil
+;;   :init
+;;   (setq evil-want-integration t)
+;;   (setq evil-want-keybinding nil)
+;;   (setq evil-want-C-u-scroll t)
+;;   (setq evil-want-C-i-jump nil)
+;;   :config
+;;   (evil-mode 1)
+;;   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+;;   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+
+;;   ;; Use visual line motions even outside of visual-line-mode buffers
+;;   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+;;   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+;;   (evil-set-initial-state 'messages-buffer-mode 'normal)
+;;   (evil-set-initial-state 'dashboard-mode 'normal))
+
+;; (general-define-key
+;;  "C-M-j" 'counsel-switch-buffer)
+;; ;;
+;; (use-package evil-collection
+;;   :after evil
+;;   :config
+;;   (evil-collection-init))
+
 (use-package magit
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
@@ -314,8 +333,7 @@
                   (org-level-8 . 1.1)))
     ;; (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
     (set-face-attribute (car face) nil :weight 'regular :height (cdr face)))
-  (dolist (face '(org-table))
-
+  (dolist (face '(org-table org-code org-block org-date))
     (set-face-attribute face nil :inherit 'fixed-pitch))
   (setq evil-auto-ident nil))
 
