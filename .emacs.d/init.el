@@ -141,13 +141,11 @@
 (use-package general
   :config
   (general-create-definer logan/leader-keys
-    :keymaps '(normal insert visual emacs)
-    :prefix "C-SPC"
-    :global-prefix "C-SPC")
+    :prefix "s-s"))
 
   (logan/leader-keys
    "t" '(:ignore t :which-key "toggles")
-   "tt" '(counsel-load-theme :which-key "choose theme")))
+   "tt" '(counsel-load-theme :which-key "choose theme"))
 
 (use-package hydra)
 
