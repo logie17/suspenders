@@ -142,8 +142,8 @@
   :config
   (general-create-definer logan/leader-keys
     :keymaps '(normal insert visual emacs)
-    :prefix "C-SPC")
-    ;; :global-prefix "C-SPC")
+    :prefix "C-SPC"
+    :global-prefix "C-SPC")
 
   (logan/leader-keys
    "t" '(:ignore t :which-key "toggles")
@@ -370,6 +370,7 @@
  'org-babel-load-languages
  '((emacs-lisp . t)
    (perl . t )
+   (gnuplot .t )
    (python . t )))
 
 (setq org-confirm-babel-evaluate nil)
