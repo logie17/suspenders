@@ -1,0 +1,5 @@
+* Background
+
+These are my personal dot files.
+
+[[file:Emacs.org][Emacs Configuration:]]
