@@ -373,6 +373,8 @@ General sets up C-<SPACE> as a leader key. Right now the following are supported
   #+end_src
 
 ** Evil Mode
+
+I originally tried evil mode but it turned out to put too much load on my aging brain. Commenting it out and leaving it here as a monument to good intentions. 
 #+begin_src emacs-lisp
 
   ;; (use-package evil
