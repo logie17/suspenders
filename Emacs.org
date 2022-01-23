@@ -232,6 +232,11 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
     (interactive)
     (find-file "~/work/personal/.dotfiles/Emacs.org"))
 
+
+  (defun logan/open-bash-org-file()
+    (interactive)
+    (find-file "~/work/personal/.dotfiles/Bash.org"))
+
 #+end_src
 
 ** lsp mode
@@ -339,36 +344,38 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
 
 * Keybindings
 
-** General/Hydra
+** key map
 
-General sets up C-<SPACE> as a leader key. Right now the following are supported.
+Sets up /s-s/  as a leader key. Right now the following are supported.
 
 - tt: theme picker (doom)
 - ts: text scaling
+- rs: random string
+- ue: open Emacs org configuratoin
+- ub: open Bash org configuration
 
-  #+begin_src emacs-lisp
+ #+begin_src emacs-lisp
+   (define-prefix-command 'logan-map)
+   (global-set-key (kbd "s-s") 'logan-map)
 
-    (use-package general
-      :config
-      (general-create-definer logan/leader-keys
-        :prefix "s-s"))
+   (define-key logan-map (kbd "t t") 'counsel-load-theme)
+   (define-key logan-map (kbd "t s") 'hydra-text-scale/body)
 
-      (logan/leader-keys
-       "t" '(:ignore t :which-key "toggles")
-       "tt" '(counsel-load-theme :which-key "choose theme"))
+   (define-key logan-map (kbd "r s") 'logan/random-string)
 
-    (use-package hydra)
+   (define-key logan-map (kbd "u e") 'logan/open-emacs-org-file)
+   (define-key logan-map (kbd "u b") 'logan/open-bash-org-file)
 
-    ;; a way to zoom in and out
-    (defhydra hydra-text-scale (:timeout 4)
-         "scale text"
-         ("j" text-scale-increase "in")
-         ("k" text-scale-decrease "out")
-         ("d" (text-scale-adjust 0) "default")
-         ("f" nil "finished" :exit t))
 
-    (logan/leader-keys
-      "ts" '(hydra-text-scale/body :which-key "scale text"))
+   (use-package hydra)
+
+   ;; a way to zoom in and out
+   (defhydra hydra-text-scale (:timeout 4)
+     "scale text"
+     ("j" text-scale-increase "in")
+     ("k" text-scale-decrease "out")
+     ("d" (text-scale-adjust 0) "default")
+     ("f" nil "finished" :exit t))
 
   #+end_src
 

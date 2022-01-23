@@ -171,6 +171,11 @@
   (interactive)
   (find-file "~/work/personal/.dotfiles/Emacs.org"))
 
+
+(defun logan/open-bash-org-file()
+  (interactive)
+  (find-file "~/work/personal/.dotfiles/Bash.org"))
+
 (defun logan/lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
   (lsp-headerline-breadcrumb-mode))
@@ -264,27 +269,27 @@
 (add-to-list 'auto-mode-alist '("\\.hbs\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
 
-(use-package general
-  :config
-  (general-create-definer logan/leader-keys
-    :prefix "s-s"))
+(define-prefix-command 'logan-map)
+(global-set-key (kbd "s-s") 'logan-map)
 
-  (logan/leader-keys
-   "t" '(:ignore t :which-key "toggles")
-   "tt" '(counsel-load-theme :which-key "choose theme"))
+(define-key logan-map (kbd "t t") 'counsel-load-theme)
+(define-key logan-map (kbd "t s") 'hydra-text-scale/body)
+
+(define-key logan-map (kbd "r s") 'logan/random-string)
+
+(define-key logan-map (kbd "u e") 'logan/open-emacs-org-file)
+(define-key logan-map (kbd "u b") 'logan/open-bash-org-file)
+
 
 (use-package hydra)
 
 ;; a way to zoom in and out
 (defhydra hydra-text-scale (:timeout 4)
-     "scale text"
-     ("j" text-scale-increase "in")
-     ("k" text-scale-decrease "out")
-     ("d" (text-scale-adjust 0) "default")
-     ("f" nil "finished" :exit t))
-
-(logan/leader-keys
-  "ts" '(hydra-text-scale/body :which-key "scale text"))
+  "scale text"
+  ("j" text-scale-increase "in")
+  ("k" text-scale-decrease "out")
+  ("d" (text-scale-adjust 0) "default")
+  ("f" nil "finished" :exit t))
 
 ;; (use-package evil
 ;;   :init
