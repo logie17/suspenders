@@ -242,6 +242,7 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
 ** Racket mode
 #+begin_src emacs-lisp
   (use-package racket-mode
+    :hook (racket-mode . racket-xp-mode)
     :ensure t)
 #+end_src
 
