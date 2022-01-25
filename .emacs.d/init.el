@@ -176,6 +176,13 @@
   (interactive)
   (find-file "~/work/personal/.dotfiles/Bash.org"))
 
+
+(defun set-mark-and-goto-line (line)
+  "Set mark and prompt for a line to go to."
+  (interactive "NLine: ")
+  (push-mark nil t nil)
+  (goto-line line))
+
 (use-package racket-mode
   :hook (racket-mode . racket-xp-mode)
   :ensure t)
@@ -274,6 +281,8 @@
 (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
 
 (define-prefix-command 'logan-map)
+
+(global-set-key (kbd "M-g") 'set-mark-and-goto-line)
 (global-set-key (kbd "s-s") 'logan-map)
 
 (define-key logan-map (kbd "t t") 'counsel-load-theme)
