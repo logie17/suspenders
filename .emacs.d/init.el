@@ -229,56 +229,60 @@
   :hook (company-mode . company-box-mode))
 
 (use-package js2-mode
-  :ensure t
-  :config
-  (setq js2-bounce-indent-flag nil
-        js2-cleanup-whitespace t
-        js2-indent-on-enter-key t)
+      :ensure t
+      :config
+      (setq js2-bounce-indent-flag nil
+            js2-cleanup-whitespace t
+            js2-indent-on-enter-key t)
 
-  :init
-  (setq js2-mirror-mode nil)
-  (setq js2-mode-indent-ignore-first-tab t)
-  (setq js2-strict-inconsistent-return-warning nil)
-  (setq js2-strict-missing-semi-warning nil)
-  (setq js2-basic-offset 2)
-  (setq js-switch-indent-offset 2)
+      :init
+      (setq js2-mirror-mode nil)
+;;      (setq js2-mode-indent-ignore-first-tab nil)
+      (setq js2-strict-inconsistent-return-warning nil)
+      (setq js2-strict-missing-semi-warning nil)
+      (setq js2-basic-offset 2)
+      (setq js-switch-indent-offset 2)
 
-  ;;js settings (for json)
-  (setq js-indent-level 2)
+      ;;js settings (for json)
+      (setq js-indent-level 2)
 
-  (setq js-basic-indent 2)
-  (setq-default js2-basic-indent 2
-                js2-basic-offset 2
-                js2-auto-indent-p t
-                js2-cleanup-whitespace t
-                js2-enter-indents-newline t
-                js2-indent-on-enter-key t
-                js2-global-externs (list "window" "module" "require" "buster" "sinon" "assert" "refute" "setTimeout" "clearTimeout" "setInterval" "clearInterval" "location" "__dirname" "console" "JSON" "jQuery" "$"))
+      (setq-default indent-tabs-mode nil)
 
-  (add-hook 'js2-mode-hook
-            (lambda ()
-              (push '("function" . ?ƒ) prettify-symbols-alist)))
+      (setq js-basic-indent 2)
+      (setq-default js2-basic-indent 2
+                    js2-basic-offset 2
+                    js2-auto-indent-p t
+                    js2-cleanup-whitespace t
+                    js2-enter-indents-newline t
+                    js2-indent-on-enter-key t
+                    js2-global-externs (list "window" "module" "require" "buster" "sinon" "assert" "refute" "setTimeout" "clearTimeout" "setInterval" "clearInterval" "location" "__dirname" "console" "JSON" "jQuery" "$"))
 
-  (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode)))
+      (add-hook 'js2-mode-hook
+                (lambda ()
+                  (push '("function" . ?ƒ) prettify-symbols-alist)))
 
-(use-package web-mode
-  :ensure t
-  :init
-  (setq web-mode-engines-alist
-        '(("ctemplate"    . "\\.html\\'")
-          ("ctemplate"    . "\\.vue\\'")
-          ("ctemplate"    . "\\.html.erb\\'")))
-  (setq web-mode-markup-indent-offset 2)
-  (setq web-mode-code-indent-offset 2)
-  (setq web-mode-css-indent-offset 2)
-  (setq web-mode-enable-auto-indentation nil)
-  (setq web-mode-script-padding 0)
-  (setq web-mode-style-padding 2))
+      (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode)))
 
-(add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.html.erb\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.hbs\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
+
+    (use-package web-mode
+      :ensure t
+      :init
+      (setq web-mode-engines-alist
+            '(("ctemplate"    . "\\.html\\'")
+              ("ctemplate"    . "\\.vue\\'")
+              ("ctemplate"    . "\\.html.erb\\'")))
+      (setq web-mode-markup-indent-offset 2)
+      (setq web-mode-code-indent-offset 2)
+      (setq web-mode-css-indent-offset 2)
+      (setq web-mode-enable-auto-indentation nil)
+      (setq web-mode-script-padding 0)
+      (setq web-mode-comment-style 2)
+      (setq web-mode-style-padding 2))
+
+    (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.html.erb\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.hbs\\'" . web-mode))
+    (add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
 
 (define-prefix-command 'logan-map)
 
