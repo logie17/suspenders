@@ -255,6 +255,11 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
     :ensure t)
 #+end_src
 
+** ML
+#+begin_src emacs-lisp
+(use-package sml-mode)
+#+end_src
+
 ** lsp mode
 #+begin_src emacs-lisp
   (defun logan/lsp-mode-setup ()

@@ -187,6 +187,8 @@
   :hook (racket-mode . racket-xp-mode)
   :ensure t)
 
+(use-package sml-mode)
+
 (defun logan/lsp-mode-setup ()
   (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
   (lsp-headerline-breadcrumb-mode))
