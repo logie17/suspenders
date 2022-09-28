@@ -239,7 +239,7 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
 
   (defun logan/create-or-open-todays-standup()
     (interactive)
-    (find-file (format "~/work/frameable/standup/%s-test.org" (format-time-string "%m%d%y")))
+    (find-file (format "~/work/frameable/standup/%s.org" (format-time-string "%m%d%y")))
     (goto-line 1)
 
     (let ((firstLine (thing-at-point 'line t)))
@@ -403,6 +403,7 @@ Sets up /s-s/  as a leader key. Right now the following are supported.
 
    (define-key logan-map (kbd "u e") 'logan/open-emacs-org-file)
    (define-key logan-map (kbd "u b") 'logan/open-bash-org-file)
+   (define-key logan-map (kbd "u s") 'logan/create-or-open-todays-standup)
 
 
    (use-package hydra)
