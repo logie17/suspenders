@@ -243,8 +243,8 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
     (goto-line 1)
 
     (let ((firstLine (thing-at-point 'line t)))
-      (when (not (string-match "\* today" firstLine))
-        (insert "* today\n\n* yesterday\n")
+      (when (not (string-match "\* yesterday" firstLine))
+        (insert "* yesterday\n\n* today\n")
         (goto-line 2)
         (insert "** "))))
 
