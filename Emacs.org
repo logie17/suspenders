@@ -241,15 +241,14 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
     (interactive)
     (find-file (format "~/work/frameable/standup/%s.org" (format-time-string "%m%d%y")))
     (goto-line 1)
-
     (let ((firstLine (thing-at-point 'line t)))
-      (when (not (string-match "\* yesterday" firstLine))
+      (when (not (bound-and-true-p firstLine)); (not (string-match "\* yesterday" firstLine))
         (insert "* yesterday\n\n* today\n")
         (goto-line 2)
         (insert "** ")))
     (split-window-below)
     (let ((yesterday (time-subtract (current-time) (* 24 3600))))
-          (find-file (format "~/work/frameable/standup/%s.org" (format-time-string "%m%d%y" yesterday)))))
+      (find-file (format "~/work/frameable/standup/%s.org" (format-time-string "%m%d%y" yesterday)))))
 
 
   (defun set-mark-and-goto-line (line)
