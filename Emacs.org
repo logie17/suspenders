@@ -215,47 +215,62 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
 * Development
 ** Utility helpers
 #+begin_src emacs-lisp
-  (defvar logan-cracklib-dict nil)
-  (defun logan/read-cracklib-dict ()
-    "Reads the cracklib small db"
-    (when (null logan-cracklib-dict)
-      (with-temp-buffer
-          (insert-file-contents "/usr/share/dict/cracklib-small")
-          (setq logan-cracklib-dict (split-string (buffer-string) "\n" t)))))
+       (defvar logan-cracklib-dict nil)
+       (defun logan/read-cracklib-dict ()
+         "Reads the cracklib small db"
+         (when (null logan-cracklib-dict)
+           (with-temp-buffer
+               (insert-file-contents "/usr/share/dict/cracklib-small")
+               (setq logan-cracklib-dict (split-string (buffer-string) "\n" t)))))
 
-  (defun logan/random-string ()
-    (interactive)
-    (logan/read-cracklib-dict)
-    (insert (nth (random (length logan-cracklib-dict)) logan-cracklib-dict )))
+       (defun logan/random-string ()
+         (interactive)
+         (logan/read-cracklib-dict)
+         (insert (nth (random (length logan-cracklib-dict)) logan-cracklib-dict )))
 
-  (defun logan/open-emacs-org-file()
-    (interactive)
-    (find-file "~/work/personal/.dotfiles/Emacs.org"))
-
-
-  (defun logan/open-bash-org-file()
-    (interactive)
-    (find-file "~/work/personal/.dotfiles/Bash.org"))
-
-  (defun logan/create-or-open-todays-standup()
-    (interactive)
-    (find-file (format "~/work/frameable/standup/%s.org" (format-time-string "%m%d%y")))
-    (goto-line 1)
-    (let ((firstLine (thing-at-point 'line t)))
-      (when (not (bound-and-true-p firstLine)); (not (string-match "\* yesterday" firstLine))
-        (insert "* yesterday\n\n* today\n")
-        (goto-line 2)
-        (insert "** ")))
-    (split-window-below)
-    (let ((yesterday (time-subtract (current-time) (* 24 3600))))
-      (find-file (format "~/work/frameable/standup/%s.org" (format-time-string "%m%d%y" yesterday)))))
+       (defun logan/open-emacs-org-file()
+         (interactive)
+         (find-file "~/work/personal/.dotfiles/Emacs.org"))
 
 
-  (defun set-mark-and-goto-line (line)
-    "Set mark and prompt for a line to go to."
-    (interactive "NLine: ")
-    (push-mark nil t nil)
-    (goto-line line))
+       (defun logan/open-bash-org-file()
+         (interactive)
+         (find-file "~/work/personal/.dotfiles/Bash.org"))
+
+       (defun logan/create-or-open-todays-standup()
+         (interactive)
+         (find-file (format "~/work/frameable/standup/%s.org" (format-time-string "%m%d%y")))
+         (goto-line 1)
+         (let ((firstLine (thing-at-point 'line t)))
+           (when (not (bound-and-true-p firstLine)); (not (string-match "\* yesterday" firstLine))
+             (insert "* yesterday\n\n* today\n")
+             (goto-line 2)
+             (insert "** ")))
+         (split-window-below)
+         (let ((yesterday (logan/get-prior-standup-date(current-time))))
+           (find-file (format "~/work/frameable/standup/%s.org" yesterday))))
+
+
+      (defun logan/get-prior-standup-date(current-day)
+        (interactive)
+        (let ((yesterday (time-subtract current-day (* 24 3600))))
+          (cond ((string-equal (format-time-string "%u" yesterday) "7")
+                 (format-time-string "%m%d%y" (time-subtract current-day (* 3 (* 24 3600)))))
+                (t
+                 (format-time-string "%m%d%y" (time-subtract current-day (* 24 3600)))))))
+
+      (ert-deftest get-standup-test ()
+        (should
+         (equal "093022" (logan/get-prior-standup-date (date-to-time "2022-10-03T12:33:05Z"))))
+        (should
+         (equal "100322" (logan/get-prior-standup-date (date-to-time "2022-10-04T12:33:05Z")))))
+
+
+       (defun set-mark-and-goto-line (line)
+         "Set mark and prompt for a line to go to."
+         (interactive "NLine: ")
+         (push-mark nil t nil)
+         (goto-line line))
 
 
 
