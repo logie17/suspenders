@@ -531,6 +531,16 @@ I originally tried evil mode but it turned out to put too much load on my aging 
 
 #+end_src
 
+
+* Terminal stuff
+
+#+begin_src emacs_lisp
+
+  (use-package vterm
+    :ensure t)
+
+#+end_src
+
 * Tempo
 
 #+begin_src emacs-lisp
