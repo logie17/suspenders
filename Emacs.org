@@ -214,63 +214,98 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
 
 * Development
 ** Utility helpers
+
+#+name: holidayTable
+| Date             |
+|------------------|
+| <2022-10-10 Mon> |
+| <2022-11-11 Fri> |
+
+
+
+#+begin_src emacs-lisp :exports code :var work-holidays=holidayTable
+  (setq logan/work-holidays
+        (mapcar (lambda (d)
+                  (let ((pt (parse-time-string (car d))))
+                    (format "%s%s%s" (nth 3 pt) (nth 4 pt) (nth 5 pt))))
+                work-holidays))
+#+end_src
+
 #+begin_src emacs-lisp
-  (defvar logan-cracklib-dict nil)
-  (defun logan/read-cracklib-dict ()
-    "Reads the cracklib small db"
-    (when (null logan-cracklib-dict)
-      (with-temp-buffer
-        (insert-file-contents "/usr/share/dict/cracklib-small")
-        (setq logan-cracklib-dict (split-string (buffer-string) "\n" t)))))
+    (defvar logan-cracklib-dict nil)
+    (defun logan/read-cracklib-dict ()
+      "Reads the cracklib small db"
+      (when (null logan-cracklib-dict)
+        (with-temp-buffer
+          (insert-file-contents "/usr/share/dict/cracklib-small")
+          (setq logan-cracklib-dict (split-string (buffer-string) "\n" t)))))
 
-  (defun logan/random-string ()
-    (interactive)
-    (logan/read-cracklib-dict)
-    (insert (nth (random (length logan-cracklib-dict)) logan-cracklib-dict )))
+    (defun logan/random-string ()
+      (interactive)
+      (logan/read-cracklib-dict)
+      (insert (nth (random (length logan-cracklib-dict)) logan-cracklib-dict )))
 
-  (defun logan/open-emacs-org-file()
-    (interactive)
-    (find-file "~/work/personal/.dotfiles/Emacs.org"))
-
-
-  (defun logan/open-bash-org-file()
-    (interactive)
-    (find-file "~/work/personal/.dotfiles/Bash.org"))
-
-  (defun logan/create-or-open-todays-standup()
-    (interactive)
-    (find-file (format "~/work/frameable/standup/%s.org" (format-time-string "%m%d%y")))
-    (goto-line 1)
-    (let ((firstLine (thing-at-point 'line t)))
-      (when (not (bound-and-true-p firstLine)); (not (string-match "\* yesterday" firstLine))
-        (insert "* yesterday\n\n* today\n")
-        (goto-line 2)
-        (insert "** ")))
-    (split-window-below)
-    (let ((yesterday (logan/get-prior-standup-date(current-time))))
-      (find-file (format "~/work/frameable/standup/%s.org" yesterday))))
+    (defun logan/open-emacs-org-file()
+      (interactive)
+      (find-file "~/work/personal/.dotfiles/Emacs.org"))
 
 
-  (defun logan/get-prior-standup-date(current-day)
-    (interactive)
-    (let ((yesterday (time-subtract current-day (* 24 3600))))
-      (cond ((string-equal (format-time-string "%u" yesterday) "7")
-             (format-time-string "%m%d%y" (time-subtract current-day (* 3 (* 24 3600)))))
-            (t
-             (format-time-string "%m%d%y" (time-subtract current-day (* 24 3600)))))))
+    (defun logan/open-bash-org-file()
+      (interactive)
+      (find-file "~/work/personal/.dotfiles/Bash.org"))
 
-  (ert-deftest get-standup-test ()
-    (should
-     (equal "093022" (logan/get-prior-standup-date (date-to-time "2022-10-03T12:33:05Z"))))
-    (should
-     (equal "100322" (logan/get-prior-standup-date (date-to-time "2022-10-04T12:33:05Z")))))
+    (defun logan/create-or-open-todays-standup()
+      (interactive)
+      (find-file (format "~/work/frameable/standup/%s.org" (format-time-string "%m%d%y")))
+      (goto-line 1)
+      (let ((firstLine (thing-at-point 'line t)))
+        (when (not (bound-and-true-p firstLine)); (not (string-match "\* yesterday" firstLine))
+          (insert "* yesterday\n\n* today\n")
+          (goto-line 2)
+          (insert "** ")))
+      (split-window-below)
+      (let ((yesterday (logan/get-prior-standup-date(current-time))))
+        (find-file (format "~/work/frameable/standup/%s.org" yesterday))))
 
 
-  (defun set-mark-and-goto-line (line)
-    "Set mark and prompt for a line to go to."
-    (interactive "NLine: ")
-    (push-mark nil t nil)
-    (goto-line line))
+    (defun logan/check-company-holiday(current-day)
+      (interactive)
+      (print (format-time-string "%m%d%y" current-day))
+      (member (format-time-string "%m%d%Y" current-day) logan/work-holidays))
+
+    (logan/check-company-holiday (date-to-time "2022-10-10T12:33:05Z"))
+
+    (defun logan/get-prior-standup-date(current-day)
+      (interactive)
+      (let ((yesterday (time-subtract current-day (* 24 3600))))
+        (cond ((string-equal (format-time-string "%u" yesterday) "7")
+               (format-time-string "%m%d%y" (time-subtract current-day (* 3 (* 24 3600)))))
+              ((logan/check-company-holiday yesterday)
+               (logan/get-prior-standup-date yesterday))
+              (t
+               (format-time-string "%m%d%y" (time-subtract current-day (* 24 3600)))))))
+
+
+    (ert-deftest logan/check-company-holiday ()
+      (should
+       (equal t (listp(logan/check-company-holiday (date-to-time "2022-10-10T12:33:05Z"))))))
+
+    (ert-deftest get-standup-test ()
+      (should
+       (equal "093022" (logan/get-prior-standup-date (date-to-time "2022-10-03T12:33:05Z"))))
+      (should
+       (equal "100322" (logan/get-prior-standup-date (date-to-time "2022-10-04T12:33:05Z"))))
+      (should
+       (equal "100722" (logan/get-prior-standup-date (date-to-time "2022-10-11T12:33:05Z"))))
+      (should
+       (equal "101022" (logan/get-prior-standup-date (date-to-time "2022-11-11T12:33:05Z")))))
+
+
+    (defun set-mark-and-goto-line (line)
+      "Set mark and prompt for a line to go to."
+      (interactive "NLine: ")
+      (push-mark nil t nil)
+      (goto-line line))
 
 
 
