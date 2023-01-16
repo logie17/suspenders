@@ -49,6 +49,10 @@
     (require 'exwm-systemtray)
     (exwm-systemtray-enable)
 
+    (defun logan/set-wallpaper ()
+      (interactive)
+      (start-process-shell-command "feh" nil "feh --bg-scale /usr/share/backgrounds/matt-mcnulty-nyc-2nd-ave.jpg"))
+
     (setq exwm-input-global-keys
           `(
             ([?\s-r] . exwm-reset)
