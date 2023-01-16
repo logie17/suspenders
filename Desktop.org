@@ -20,6 +20,10 @@
     (let ((command-parts (split-string command "[ ]+")))
       (apply #'call-process `(,(car command-parts) nil 0 nil,@(cdr command-parts)))))
 
+  (defun logan/set-wallpaper ()
+    (interactive)
+    (start-process-shell-command "feh" nil "feh --bg-scale /usr/share/backgrounds/matt-mcnulty-nyc-2nd-ave.jpg"))
+
   (defun logan/exwm-init-hook ()
     (exwm-workspace-switch-create 1)
     (logan/run-in-background "nm-applet"))
@@ -46,12 +50,10 @@
 
     (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
 
+    (logan/set-wallpaper)
+
     (require 'exwm-systemtray)
     (exwm-systemtray-enable)
-
-    (defun logan/set-wallpaper ()
-      (interactive)
-      (start-process-shell-command "feh" nil "feh --bg-scale /usr/share/backgrounds/matt-mcnulty-nyc-2nd-ave.jpg"))
 
     (setq exwm-input-global-keys
           `(
@@ -82,7 +84,9 @@
 
 #+begin_src shell :tangle .emacs.d/exwm/start-exwm.sh :shebang #!/bin/sh
 
-exec dbus-launch --exit-with-session emacs -mm --debug-init -l ~/.emacs.d/lisp/lb-desktop.el
+compton &
+
+  exec dbus-launch --exit-with-session emacs -mm --debug-init -l ~/.emacs.d/lisp/lb-desktop.el
 
 
 #+end_src
