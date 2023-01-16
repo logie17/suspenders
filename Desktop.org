@@ -26,6 +26,14 @@
 
   (defun logan/exwm-init-hook ()
     (exwm-workspace-switch-create 1)
+
+    (setq display-time-day-and-date 1)
+    (display-time-mode 1)
+
+    (display-battery-mode 1)
+
+    (logan/run-in-background "pasystray")
+    (logan/run-in-background "blueman-applet")
     (logan/run-in-background "nm-applet"))
 
   (defun logan/exwm-update-class()
@@ -53,6 +61,7 @@
     (logan/set-wallpaper)
 
     (require 'exwm-systemtray)
+    (setq exwm-systemtray-height 32)
     (exwm-systemtray-enable)
 
     (setq exwm-input-global-keys
@@ -79,6 +88,19 @@
 
 
     (exwm-enable))
+
+  (use-package desktop-environment
+    :after exwm
+    :config (desktop-environment-mode)
+    :custom
+    (dekstop-environment-brightness-small-increment "2%+")
+    (desktop-environment-brightness-small-decrement "2%-")
+    (desktop-environment-brightness-normal-increment "5%+")
+    (desktop-environment-brightness-normal-decrement "5%-"))
+
+
+
+
 
 #+end_src
 
