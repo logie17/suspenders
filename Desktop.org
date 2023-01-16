@@ -16,7 +16,13 @@
 * EXWM Setup
 
 #+begin_src emacs-lisp :tangle .emacs.d/lisp/lb-desktop.el :mkdirp yes
+  (defun logan/run-in-background (command)
+    (let ((command-parts (split-string command "[ ]+")))
+      (apply #'call-process `(,(car command-parts) nil 0 nil,@(cdr command-parts)))))
 
+  (defun logan/exwm-init-hook ()
+    (exwm-workspace-switch-create 1)
+    (logan/run-in-background "nm-applet"))
 
   (defun logan/exwm-update-class()
     (exwm-workspace-rename-buffer exwm-class-name))
@@ -26,7 +32,7 @@
     (setq exwm-workspace-number 5)
 
     (add-hook 'exwm-update-class-hook #'logan/exwm-update-class)
-
+    (add-hook 'exwm-init-hook #'logan/exwm-init-hook)
     (setq exwm-input-prefix-keys
       '(?\C-x
         ?\C-u
@@ -42,8 +48,6 @@
 
     (require 'exwm-systemtray)
     (exwm-systemtray-enable)
-
-    (start-process-shell-command "nm-applet" nil "nm-applet")
 
     (setq exwm-input-global-keys
           `(
