@@ -72,3 +72,9 @@
 
 #+end_src
 
+#+begin_src shell :tangle ./exwm/start-exwm.sh :shebang #!/bin/sh
+
+exec dbus-launch --exit-with-session emacs -mm --debug-init -l ~/.emacs.d/lisp/lb-desktop.el
+
+
+#+end_src
