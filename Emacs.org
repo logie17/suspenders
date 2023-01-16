@@ -41,62 +41,6 @@ For package management I will be using package (builtin) and [[https://github.co
 #+end_src
 
 
-* EWXM
-
-#+begin_src emacs-lisp
-  (defun logan/exwm-update-class()
-    (exwm-workspace-rename-buffer exwm-class-name))
-
-  (use-package exwm
-    :config
-    (setq exwm-workspace-number 5)
-
-    (add-hook 'exwm-update-class-hook #'logan/exwm-update-class)
-
-    (setq exwm-input-prefix-keys
-      '(?\C-x
-        ?\C-u
-        ?\C-h
-        ?\M-x
-        ?\M-`
-        ?\M-&
-        ?\M-:
-        ?\C-\M-j
-        ?\C-\ ))
-
-    (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
-
-    (require 'exwm-systemtray)
-    (exwm-systemtray-enable)
-
-
-    (setq exwm-input-global-keys
-          `(
-            ([?\s-r] . exwm-reset)
-            ([s-left] . windmove-left)
-            ([s-right] . windmove-right)
-            ([s-up] . windmove-up)
-            ([s-down] . windmove-down)
-            ;; Launch applications via shell command
-            ([?\s-&] . (lambda (command)
-                         (interactive (list (read-shell-command "$ ")))
-                         (start-process-shell-command command nil command)))
-            ;; Switch workspace
-            ([?\s-w] . exwm-workspace-switch)
-            ;; 's-N': Switch to certain workspace with Super (Win) plus a number key (0 - 9)
-            ,@(mapcar (lambda (i)
-                        `(,(kbd (format "s-%d" i)) .
-                          (lambda ()
-                            (interactive)
-                            (exwm-workspace-switch-create ,i))))
-                      (number-sequence 0 9))))
-
-
-
-    (exwm-enable))
-
-#+end_src
-
 
 
 * Basic UI Configuration
