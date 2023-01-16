@@ -1,5 +1,5 @@
 #+title: Logan's emacs configuration
-#+PROPERTY: header-args:emacs-lisp :tangle ./.emacs.d/init.el :mkdirp yes
+#+PROPERTY: header-args :emacs-lisp :tangle ./.emacs.d/init.el :mkdirp yes
 
 * Background
 
@@ -13,6 +13,8 @@ I was originally inspired to organize my dot files after watching the series: [[
   (setq exec-path (append exec-path '("/home/logan/.nvm/versions/node/v14.16.1/bin")))
 
   (server-start)
+
+  (push "~/.emacs.d/lisp" load-path)
 
 #+end_src
 * Package
