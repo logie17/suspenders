@@ -10,6 +10,7 @@
 :END:
 :CONTENTS:
 - [[#exwm-setup][EXWM Setup]]
+- [[#exwm-startup-script][EXWM Startup Script]]
 :END:
 
 
@@ -113,6 +114,11 @@
 
 
 #+end_src
+
+
+* EXWM Startup Script
+
+The following is the script that is ran when the window manager starts up. We need to make sure compton is running and xss-lock. 
 
 #+begin_src shell :tangle .emacs.d/exwm/start-exwm.sh :shebang #!/bin/sh
 
