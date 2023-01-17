@@ -95,7 +95,7 @@
                             (exwm-workspace-switch-create ,i))))
                       (number-sequence 0 9))))
 
-
+    (exwm-input-set-key (kbd "s-SPC") 'counsel-linux-app)
 
     (exwm-enable))
 
@@ -116,7 +116,9 @@
 
 #+begin_src shell :tangle .emacs.d/exwm/start-exwm.sh :shebang #!/bin/sh
 
-compton &
+  compton &
+
+  xss-lock -- slock &
 
   exec dbus-launch --exit-with-session emacs -mm --debug-init -l ~/.emacs.d/lisp/lb-desktop.el
 
