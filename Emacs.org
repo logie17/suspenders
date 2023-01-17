@@ -161,6 +161,8 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
 
   ;; get ivy rich stuff into useful counsel commands
   (use-package counsel
+    :custom
+    (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
     :bind (("M-x" . counsel-M-x)
            ("C-x b" . counsel-ibuffer)
            ("C-x C-f" . counsel-find-file)
