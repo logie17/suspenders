@@ -395,6 +395,15 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
             js2-cleanup-whitespace t
             js2-indent-on-enter-key t)
 
+      (defun run-node-on-current-file ()
+        "Run the current buffer's file with Node.js."
+        (interactive)
+        (when (buffer-file-name)
+          (save-buffer)  ;; Save the file
+          (compile (concat "node " (buffer-file-name)))))
+
+      (define-key js2-mode-map (kbd "<f5>") 'run-node-on-current-file)
+
       :init
       (setq js2-mirror-mode nil)
       ;;      (setq js2-mode-indent-ignore-first-tab nil)
@@ -407,16 +416,6 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
       (setq js-indent-level 2)
 
       (setq-default indent-tabs-mode nil)
-
-
-      (defun run-node-on-current-file ()
-        "Run the current buffer's file with Node.js."
-        (interactive)
-        (when (buffer-file-name)
-          (save-buffer)  ;; Save the file
-          (compile (concat "node " (buffer-file-name)))))
-
-      (define-key js2-mode-map (kbd "<f5>") 'run-node-on-current-file)
 
 
       (setq js-basic-indent 2)
