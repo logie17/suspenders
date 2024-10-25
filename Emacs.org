@@ -208,6 +208,7 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
                                             ))
 
     (setq smart-tab-using-hippie-expand t)
+    (setq smart-tab-completion-functions-alist '((js2-mode . company-complete)))
     (setq smart-tab-disabled-major-modes '(term-mode inf-ruby-mode org-mode eshell-mode)))
 
 #+end_src
