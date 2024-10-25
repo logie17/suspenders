@@ -358,17 +358,25 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
 
 ** lsp mode
 #+begin_src emacs-lisp
+        ; https://emacs-lsp.github.io/lsp-mode/page/performance/
+  (setq read-process-output-max (* 1024 1024)) ;; 1mb
+  (setq gc-cons-threshold 100000000)
+
   (defun logan/lsp-mode-setup ()
     (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
     (lsp-headerline-breadcrumb-mode))
 
   (use-package lsp-mode
     :commands (lsp lsp-deferred)
-    :hook (lsp-mode . logan/lsp-mode-setup)
+    :hook (
+           (lsp-mode . logan/lsp-mode-setup)
+           (vue-mode . lsp-deferred)
+           (js2-mode . lsp))
     :init
     (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
     :config
-    (lsp-enable-which-key-integration t))
+    (lsp-enable-which-key-integration t)
+    :commands lsp)
 #+end_src
 
 ** lsp ui
