@@ -391,6 +391,15 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
     :after lsp)
   (use-package lsp-ivy)
 
+  (straight-use-package
+   '(lsp-volar :type git :host github :repo "jadestrong/lsp-volar"))
+
+  (use-package lsp-volar
+     :ensure t
+     :straight t
+     :after lsp-mode)
+
+
   (use-package typescript-mode
     :mode "\\.ts\\'"
     :hook (typescript-mode . lsp-deferred)
@@ -410,6 +419,13 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
 
   (use-package company-box
     :hook (company-mode . company-box-mode))
+#+end_src
+
+** js modes
+
+#+begin_src emacs-lisp
+(use-package vue-mode)
+
 #+end_src
 
 #+begin_src emacs-lisp
