@@ -16,6 +16,7 @@ I was originally inspired to organize my dot files after watching the series: [[
 
   (push "~/.emacs.d/lisp" load-path)
 
+  (desktop-save-mode 1)
 #+end_src
 * Package
 
