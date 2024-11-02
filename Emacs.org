@@ -37,6 +37,15 @@ For package management I will be using package (builtin) and [[https://github.co
    (package-install 'use-package))
 
 (require 'use-package)
+(use-package exec-path-from-shell)
+(use-package exec-path-from-shell
+  :ensure t
+  :if (memq window-system '(mac ns x))
+  :config
+  (exec-path-from-shell-copy-env "OPENAI_TMP")
+  (exec-path-from-shell-copy-env "OPENAI_API_KEY")
+  (exec-path-from-shell-initialize))
+
 
 (setq use-package-always-ensure t)
 
@@ -676,15 +685,21 @@ I originally tried evil mode but it turned out to put too much load on my aging 
 
 * Chat-gpt
 #+begin_src emacs-lisp
-(use-package openai
-  :straight (openai :type git :host github :repo "emacs-openai/openai"))
+  (use-package shell-maker
+    :straight (:host github :repo "xenodium/chatgpt-shell" :files ("shell-maker.el")))
 
-(use-package chatgpt
-  :straight (chatgpt :type git :host github :repo "emacs-openai/chatgpt")
+  (use-package chatgpt-shell
+  :ensure t
   :config
-  ;; Set your API key for OpenAI (make sure it's stored securely!)
-  (setq chatgpt-api-key (get-env "OPENAI_API_KEY"))
-  ;; You can also set other options if needed
+  (setq chatgpt-shell-openai-key (getenv "OPENAI_API_KEY"))
+  (setq chatgpt-shell-api-url-path "/v1/chat/completions")
+  (setq chatgpt-shell-debug t)
+  (unless (file-directory-p (getenv "OPENAI_TMP"))
+    (make-directory (getenv "OPENAI_TMP") t))
+  (setq temporary-file-directory (getenv "OPENAI_TMP"))
+  :straight (:host github :repo "xenodium/chatgpt-shell" :files ("chatgpt-shell.el")))
+
+    ;; You can also set other options if needed
 
 #+end_src
 
