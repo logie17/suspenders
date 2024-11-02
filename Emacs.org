@@ -182,10 +182,6 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
     :config
     (ivy-mode 1))
 
-  (use-package ivy-rich
-    :init
-    (ivy-rich-mode 1))
-
   ;; get ivy rich stuff into useful counsel commands
   (use-package counsel
     :custom
@@ -195,6 +191,10 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
            ("C-x C-f" . counsel-find-file)
            :map minibuffer-local-map
            ("C-r" . 'counsel-minibuffer-history)))
+  (use-package ivy-rich
+    :init
+    (ivy-rich-mode 1))
+
 
 #+end_src
 
@@ -378,9 +378,11 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
 
   (use-package lsp-mode
     :commands (lsp lsp-deferred)
+    
     :hook (
            (lsp-mode . logan/lsp-mode-setup)
            (vue-mode . lsp-deferred)
+           (typescripe-mode . lsp)
            (js2-mode . lsp))
     :init
     (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
