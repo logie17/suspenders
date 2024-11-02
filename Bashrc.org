@@ -1,0 +1,225 @@
+#+TITLE: YO
+
+#+PROPERTY: header-args:sh :tangle "~/.bashrc" :shebang "#!/bin/bash" :padline
+
+* Background
+
+This is my bash configuration.
+
+
+* Environment
+
+#+begin_src sh
+
+  export PATH="$PATH:/home/logan/.local/bin"
+  export PYENV_ROOT="$HOME/.pyenv"
+
+#+end_src
+
+* Source non-committed things
+
+#+begin_src sh
+
+  if [ -f .env ]; then
+    export $(cat .env | xargs)
+  fi
+
+#+end_src
+
+
+
+* Aliases
+
+#+begin_src sh
+function find_dir {
+  varname="find_dir_$1"
+  varname=${varname/-/_}
+  export varname
+  if [ ${!varname} ]; then
+    echo "${!varname}"
+  else
+    export $varname="$(find ${HOME} -maxdepth 4 -iname Library -prune -o -iname Pictures -prune -o -iname $1 -type d -print 2>/dev/null)"
+    echo "${!varname}"
+  fi
+  unset varname
+}
+
+alias kingfisher='cd `find_dir kingfisher-www`'
+alias screenshot-service='cd `find_dir screenshot-service`'
+alias meadowlark='cd `find_dir meadowlark`'
+alias magpie='cd `find_dir magpie`'
+alias songbird='cd `find_dir songbird`'
+alias swift='cd `find_dir swift`'
+alias antwren='cd `find_dir antwren`'
+alias hummingbird='cd `find_dir hummingbird`'
+
+
+#+end_src
+
+* env
+
+#+begin_src sh
+
+# Setting PATH for Python 3.7
+# The original version is saved in .bash_profile.pysave
+SSH_ENV="$HOME/.ssh/environment"
+
+if which ruby >/dev/null && which gem >/dev/null; then
+  PATH="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin:$PATH"
+fi
+
+if [ -f ~/.bash/rc/git-completion.bash ]; then
+   source ~/.bash/rc/git-completion.bash
+fi
+
+export PATH="/usr/local/bin:/Library/Frameworks/Python.framework/Versions/3.7/bin:$HOME/bin:$HOME/go/bin:${PATH}"
+
+alias ll="ls -la"
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias pf='git push --force-with-lease origin $(git rev-parse --abbrev-ref HEAD)'
+
+# fix ssh with uxrvt
+TERM=xterm-256color
+
+# Top 20 largest file in current directory
+alias lfh="du -ah . | sort -n -r | head -n 20"
+
+function create_alias {
+  alias=$1
+  description=$2
+  keywords=${@:3}
+  #voitheia asdfindex "$alias" "$description" $keywords
+  alias "${alias}"
+}
+
+create_alias lfh="du -ah . | sort -n -r | head -n 20" "Top 20 largest files in current directory" "files" "disk size"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# history across all tabs
+# Maximum number of history lines in memory
+export HISTSIZE=500000
+# Maximum number of history lines on disk
+export HISTFILESIZE=50000
+# Ignore duplicate lines
+export HISTCONTROL=ignoredups:erasedups
+# When the shell exits, append to the history file
+#  instead of overwriting it
+shopt -s histappend
+
+# After each command, append to the history file
+#  and reread it
+export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'n'}history -a; history -c; history -r"
+
+#+end_src
+
+
+* Prompt
+
+#+begin_src sh
+function nonzero_return() {
+	RETVAL=$?
+	[ $RETVAL -ne 0 ] && echo "$RETVAL"
+}
+
+# get current branch in git repo
+function parse_git_branch() {
+	BRANCH=`git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/'`
+	if [ ! "${BRANCH}" == "" ]
+	then
+		STAT=`parse_git_dirty`
+		echo "[${BRANCH}${STAT}]"
+	else
+		echo ""
+	fi
+}
+
+# get current status of git repo
+function parse_git_dirty {
+	status=`git status 2>&1 | tee`
+	dirty=`echo -n "${status}" 2> /dev/null | grep "modified:" &> /dev/null; echo "$?"`
+	untracked=`echo -n "${status}" 2> /dev/null | grep "Untracked files" &> /dev/null; echo "$?"`
+	ahead=`echo -n "${status}" 2> /dev/null | grep "Your branch is ahead of" &> /dev/null; echo "$?"`
+	newfile=`echo -n "${status}" 2> /dev/null | grep "new file:" &> /dev/null; echo "$?"`
+	renamed=`echo -n "${status}" 2> /dev/null | grep "renamed:" &> /dev/null; echo "$?"`
+	deleted=`echo -n "${status}" 2> /dev/null | grep "deleted:" &> /dev/null; echo "$?"`
+	bits=''
+  deleted_icon=$'\u2747'
+  dirty_icon=$'\u2757'
+  clean_icon=$'\u2705'
+  untracked_icon=$'\u2753'
+  new_icon=$'\u002b'
+	if [ "${renamed}" == "0" ]; then
+		bits="> ${bits}"
+	fi
+	if [ "${ahead}" == "0" ]; then
+		bits="* ${bits}"
+	fi
+	if [ "${newfile}" == "0" ]; then
+		bits="${new_icon} ${bits}"
+	fi
+	if [ "${untracked}" == "0" ]; then
+		bits="${untracked_icon} ${bits}"
+	fi
+	if [ "${deleted}" == "0" ]; then
+		bits="${deleted_icon} ${bits}"
+	fi
+	if [ "${dirty}" == "0" ]; then
+		bits="${dirty_icon} ${bits}"
+	fi
+	if [ ! "${bits}" == "" ]; then
+		echo "${bits}"
+	else
+		echo "${clean_icon}"
+	fi
+}
+
+#Regular text color
+BLACK='\[\e[0;30m\]'
+#Bold text color
+BBLACK='\[\e[1;30m\]'
+#background color
+BGBLACK='\[\e[40m\]'
+RED='\[\e[0;31m\]'
+BRED='\[\e[1;31m\]'
+BGRED='\[\e[41m\]'
+GREEN='\[\e[0;32m\]'
+BGREEN='\[\e[1;32m\]'
+BGGREEN='\[\e[1;32m\]'
+YELLOW='\[\e[0;33m\]'
+BYELLOW='\[\e[1;33m\]'
+BGYELLOW='\[\e[1;33m\]'
+BLUE='\[\e[0;34m\]'
+BBLUE='\[\e[1;34m\]'
+BGBLUE='\[\e[1;34m\]'
+MAGENTA='\[\e[0;35m\]'
+BMAGENTA='\[\e[1;35m\]'
+BGMAGENTA='\[\e[1;35m\]'
+CYAN='\[\e[0;36m\]'
+BCYAN='\[\e[1;36m\]'
+BGCYAN='\[\e[1;36m\]'
+WHITE='\[\e[0;37m\]'
+BWHITE='\[\e[1;37m\]'
+BGWHITE='\[\e[1;37m\]'
+PGREEN='\[\e[32;40m\]'
+PROMPT_ARROW=$'\u2630'
+
+# ls coloring
+export CLICOLOR=true
+export LSCOLORS=Dxfxcxdxbxegedabagacad
+
+export PS1="${BRED}\`parse_git_branch\` ${BYELLOW}\w ${PGREEN}\`nonzero_return\`\d ${WHITE}${PROMPT_ARROW} "
+
+#+end_src
+
+* Utils
+** Git
+
+#+begin_src sh
+  # self explanatory
+  alias show-recent-branches='git for-each-ref --sort=-committerdate --format="%(committerdate:short) %(refname:short)" | fzf --multi'
+#+end_src
