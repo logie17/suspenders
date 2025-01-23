@@ -45,11 +45,11 @@
 
 !!URxvt*font: xft:DejaVuSansMono:pixelsize=18:antialias=true
 !!URxvt.font: xft:Ubuntu Mono:pixelsize=18:antialias=true:hinting=true,xft:Source Code Pro:pixelsize=18:style=medium:antialias=true,-*-unifont-*-*-*-*-*-*-*-*-*-*-*-*
-!!URxvt*boldFont: xft:DejaVuMono-Bold:pixelsize=18:antialias=true
-!!URxvt*italicFont: xft:DejaVuMono-Italic:pixelsize=18:antialias=true
-URxvt.font: xft:hack:pixelsize=18,\
-            xft:DejaVu Sans Mono:pixelsize:18,\
-            xft:Unifont:pixelsize:18,\
+!!URxvt*boldFont: xft:DejaVuMono-Bold:pixelsize=58:antialias=true
+!!URxvt*italicFont: xft:DejaVuMono-Italic:pixelsize=58:antialias=true
+URxvt.font: xft:hack:pixelsize=24,\
+            xft:DejaVu Sans Mono:pixelsize:24,\
+            xft:Unifont:pixelsize:24,\
             -*-unifont-*-*-*-*-*-*-*-*-*-*-*-*
 URxvt*letterSpace: -5
 
@@ -86,6 +86,7 @@ URxvt.keysym.Shift-Control-V: eval:paste_clipboard
 URxvt.keysym.Shift-Control-C: eval:selection_to_clipboard
 URxvt.keysym.Control-Meta-c: builtin-string:
 URxvt.keysym.Control-Meta-v: builtin-string:
+URxvt.keysym.Control-t: perl:tabbed:new_tab
 
 ! Scrolling
 URxvt.saveLines: 10000
