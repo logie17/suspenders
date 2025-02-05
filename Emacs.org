@@ -677,37 +677,39 @@ I originally tried evil mode but it turned out to put too much load on my aging 
 #+end_src
 
 
-#+begin_src emacs-lisp
+#+begin_srctang emacs-lisp
 
   (defun logan/org-babel-tangle-config ()
+    (interactive)
     (let ((pathl (split-string (buffer-file-name) "/")))
       (let* ((filename (last pathl))
-             (orgPath (string-join (reverse (cdr (reverse pathl))) "/")))
-        (when (and (string-equal orgPath
-                                 (expand-file-name "~/work/personal/.dotfiles"))
-                   (string-equal (car(reverse(split-string (string-join filename) "\\."))) "org"))
+	     (orgPath (string-join (reverse (cdr (reverse pathl))) "/")))
+	(when (and (string-equal orgPath
+	(expand-file-name "~/work/personal/.dotfiles"))
+		   (string-equal (car(reverse(split-string (string-join filename) "\\."))) "org"))
 
-          (let ((org-confirm-babel-evaluate nil))
-            (org-babel-tangle))))))
+	  (let ((org-confirm-babel-evaluate nil))
+	    (org-babel-tangle))))))
 
   (add-hook 'org-mode-hook (lambda () (add-hook 'after-save-hook #'logan/org-babel-tangle-config)))
 #+end_src
 
+
 * Chat-gpt
 #+begin_src emacs-lisp
-  (use-package shell-maker
-    :straight (:host github :repo "xenodium/chatgpt-shell" :files ("shell-maker.el")))
+  ;; (use-package shell-maker
+  ;;   :straight (:host github :repo "xenodium/chatgpt-shell" :files ("shell-maker.el")))
 
-  (use-package chatgpt-shell
-  :ensure t
-  :config
-  (setq chatgpt-shell-openai-key (getenv "OPENAI_API_KEY"))
-  (setq chatgpt-shell-api-url-path "/v1/chat/completions")
-  (setq chatgpt-shell-debug t)
-  (unless (file-directory-p (getenv "OPENAI_TMP"))
-    (make-directory (getenv "OPENAI_TMP") t))
-  (setq temporary-file-directory (getenv "OPENAI_TMP"))
-  :straight (:host github :repo "xenodium/chatgpt-shell" :files ("chatgpt-shell.el")))
+  ;; (use-package chatgpt-shell
+  ;; :ensure t
+  ;; :config
+  ;; (setq chatgpt-shell-openai-key (getenv "OPENAI_API_KEY"))
+  ;; (setq chatgpt-shell-api-url-path "/v1/chat/completions")
+  ;; (setq chatgpt-shell-debug t)
+  ;; (unless (file-directory-p (getenv "OPENAI_TMP"))
+  ;;   (make-directory (getenv "OPENAI_TMP") t))
+  ;; (setq temporary-file-directory (getenv "OPENAI_TMP"))
+  ;; :straight (:host github :repo "xenodium/chatgpt-shell" :files ("chatgpt-shell.el")))
 
     ;; You can also set other options if needed
 
