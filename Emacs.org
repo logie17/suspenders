@@ -378,11 +378,12 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
 
   (use-package lsp-mode
     :commands (lsp lsp-deferred)
-    
+
     :hook (
            (lsp-mode . logan/lsp-mode-setup)
            (vue-mode . lsp-deferred)
            (typescripe-mode . lsp)
+           (go-mode . lsp)
            (js2-mode . lsp))
     :init
     (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
@@ -437,6 +438,13 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
 
 #+begin_src emacs-lisp
 (use-package vue-mode)
+
+#+end_src
+
+#+begin_src golang
+
+(use-package go-mode
+  :ensure t)
 
 #+end_src
 
