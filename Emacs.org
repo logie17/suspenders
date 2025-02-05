@@ -400,6 +400,10 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
      :custom
      (lsp-ui-doc-position 'bottom))
 
+
+  (add-hook 'before-save-hook #'lsp-organize-imports)
+  (add-hook 'before-save-hook #'lsp-format-buffer)
+
   (use-package lsp-treemacs
     :after lsp)
   (use-package lsp-ivy)
@@ -444,11 +448,16 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
 #+begin_src golang
 
 (use-package go-mode
+  :config
+  (setq gofmt-command "goimports")
+  (add-hook 'before-save-hook 'gofmt-before-save)
+
   :ensure t)
 
 #+end_src
 
 #+begin_src emacs-lisp
+  
     (use-package js2-mode
       :ensure t
       :config
