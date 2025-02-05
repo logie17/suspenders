@@ -11,7 +11,7 @@ This is my bash configuration.
 
 #+begin_src sh
 
-  export PATH="$PATH:/home/logan/.local/bin"
+  export PATH="$PATH:/home/logan/.local/bin:/usr/local/go/bin"
   export PYENV_ROOT="$HOME/.pyenv"
 
 #+end_src
