@@ -139,7 +139,8 @@ Opting to use [[https://github.com/doomemacs/themes][Doom Themes]] and [[https:/
   (defvar logan/default-variable-font-size 180)
   (set-face-attribute 'default nil :font "Jet Brains Mono" :height 130)
   (set-face-attribute 'fixed-pitch nil :font "Jet Brains Mono" :height 130)
-  (set-face-attribute 'variable-pitch nil :font "FreeSerif" :height 130 :weight 'regular)
+  (when (not (eq system-type 'darwin))
+    (set-face-attribute 'variable-pitch nil :font "FreeSerif" :height 130 :weight 'regular))
 
 
   (use-package rainbow-delimiters
