@@ -105,9 +105,15 @@
     ;; Currently not used
   (defvar logan/default-font-size 180)
   (defvar logan/default-variable-font-size 180)
-  (set-face-attribute 'default nil :font "Jet Brains Mono" :height 130)
-  (set-face-attribute 'fixed-pitch nil :font "Jet Brains Mono" :height 130)
-  (set-face-attribute 'variable-pitch nil :font "FreeSerif" :height 130 :weight 'regular)
+
+  (if (not (eq system-type 'darwin))
+      (progn
+        (set-face-attribute 'variable-pitch nil :font "FreeSerif" :height 130 :weight 'regular)
+        (set-face-attribute 'default nil :font "Jet Brains Mono" :height 130)
+        (set-face-attribute 'fixed-pitch nil :font "Jet Brains Mono" :height 130))
+    (progn
+        (set-face-attribute 'default nil :font "JetBrains Mono" :height 130)
+        (set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 130)))
 
 
   (use-package rainbow-delimiters
