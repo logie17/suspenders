@@ -1,0 +1,556 @@
+(add-to-list 'exec-path "/usr/local/bin/")
+(setenv "PATH" (concat (getenv "PATH") ":/home/logan/.nvm/versions/node/v20.11.0/bin"))
+(setq exec-path (append exec-path '("/home/logan/.nvm/versions/node/v20.11.0/bin")))
+
+(server-start)
+
+(push "~/.emacs.d/lisp" load-path)
+
+(desktop-save-mode 1)
+
+(require 'package)
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("org" . "https://orgmode.org/elpa/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
+
+(package-initialize)
+(unless package-archive-contents
+ (package-refresh-contents))
+
+;; Initialize use-package on non-Linux platforms
+(unless (package-installed-p 'use-package)
+   (package-install 'use-package))
+
+(require 'use-package)
+(use-package exec-path-from-shell)
+(use-package exec-path-from-shell
+  :ensure t
+  :if (memq window-system '(mac ns x))
+  :config
+  (exec-path-from-shell-copy-env "OPENAI_TMP")
+  (exec-path-from-shell-copy-env "OPENAI_API_KEY")
+  (exec-path-from-shell-initialize))
+
+
+(setq use-package-always-ensure t)
+
+(let ((bootstrap-file (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+;; Use straight.el with use-package
+(straight-use-package 'use-package)
+(setq straight-use-package-by-default t)
+
+(setq inhibit-startup-message t)
+;; Disable scroll bar
+(scroll-bar-mode -1)
+
+;; Disable toolbar
+(tool-bar-mode -1)
+
+;; Disable tooltips
+(tooltip-mode -1)
+
+;; Give the fringe some breathing room
+(set-fringe-mode 10)
+
+;; Disable menu bar
+(menu-bar-mode -1)
+
+;; Flash bell
+(setq visible-bell t)
+
+;; Ctrl-g / ESC do the same thing now
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+(global-display-line-numbers-mode t)
+
+(column-number-mode)
+
+
+; This sets the alpha channel (transparency) for background images
+; (need to have compton running and feh)  
+(set-frame-parameter (selected-frame) 'alpha '(95 .  95))
+(add-to-list 'default-frame-alist '(alpha . (90. 90)))
+(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+;; disable line numbers in certain modes
+(dolist (mode '(org-mode-hook
+                term-mode-hook
+                shell-mode-hook
+                eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
+
+(use-package all-the-icons)
+
+  (use-package doom-themes
+;    :init (load-theme 'doom-dracula t))
+    :init (load-theme 'doom-material-dark t))
+
+  ;; todo
+  (use-package doom-modeline
+    :ensure t
+    :custom ((doom-modeline height 35))
+    :init (doom-modeline-mode 1))
+
+    ;; Currently not used
+  (defvar logan/default-font-size 180)
+  (defvar logan/default-variable-font-size 180)
+  (set-face-attribute 'default nil :font "Jet Brains Mono" :height 130)
+  (set-face-attribute 'fixed-pitch nil :font "Jet Brains Mono" :height 130)
+  (set-face-attribute 'variable-pitch nil :font "FreeSerif" :height 130 :weight 'regular)
+
+
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+
+(use-package which-key
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 0.3))
+
+(use-package ivy
+  :diminish
+  :bind (("C-s" . swiper)
+         :map ivy-minibuffer-map
+         ("TAB" . ivy-alt-done)
+         ("C-l" . ivy-alt-done)
+         ("C-j" . ivy-next-line)
+         ("C-k" . ivy-previous-line)
+         :map ivy-switch-buffer-map
+         ("C-k" . ivy-previous-line)
+         ("C-l" . ivy-done)
+         ("C-d" . ivy-switch-buffer-kill)
+         :map ivy-reverse-i-search-map
+         ("C-k" . ivy-previous-line)
+         ("C-d" . ivy-reverse-i-search-kill))
+  :config
+  (ivy-mode 1))
+
+;; get ivy rich stuff into useful counsel commands
+(use-package counsel
+  :custom
+  (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
+  :bind (("M-x" . counsel-M-x)
+         ("C-x b" . counsel-ibuffer)
+         ("C-x C-f" . counsel-find-file)
+         :map minibuffer-local-map
+         ("C-r" . 'counsel-minibuffer-history)))
+(use-package ivy-rich
+  :init
+  (ivy-rich-mode 1))
+
+(setq completion-ignore-case t)
+(setq read-file-name-completion-ignore-case t)
+(use-package smart-tab
+  :config
+  (global-smart-tab-mode 1)
+  (setq hippie-expand-try-functions-list (list
+                                          'try-expand-dabbrev-visible
+                                          'try-expand-dabbrev
+                                          'try-expand-dabbrev-all-buffers
+                                          'try-expand-dabbrev-from-kill
+                                          'try-complete-file-name-partially
+                                          'try-complete-file-name
+                                          ))
+
+  (setq smart-tab-using-hippie-expand t)
+  (setq smart-tab-completion-functions-alist '((js2-mode . company-complete)))
+  (setq smart-tab-disabled-major-modes '(term-mode inf-ruby-mode org-mode eshell-mode)))
+
+(use-package helpful
+  :ensure t
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
+
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom ((projectile-completion-system 'ivy))
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  (when (file-directory-p "~/work/frameable")
+    (setq projectile-project-search-path '("~/work/frameable")))
+  (setq projectile-switch-project-action #'projectile-dired))
+
+(use-package counsel-projectile
+  :config (counsel-projectile-mode))
+
+(let ((work-holidays '(("<2022-10-10 Mon>") ("<2022-11-11 Fri>"))))
+(setq logan/work-holidays
+      (mapcar (lambda (d)
+                (let ((pt (parse-time-string (car d))))
+                  (format "%s%s%s" (nth 3 pt) (nth 4 pt) (nth 5 pt))))
+              work-holidays))
+)
+
+(defvar logan-cracklib-dict nil)
+(defun logan/read-cracklib-dict ()
+  "Reads the cracklib small db"
+  (when (null logan-cracklib-dict)
+    (with-temp-buffer
+      (insert-file-contents "/usr/share/dict/cracklib-small")
+      (setq logan-cracklib-dict (split-string (buffer-string) "\n" t)))))
+
+(defun logan/random-string ()
+  (interactive)
+  (logan/read-cracklib-dict)
+  (insert (nth (random (length logan-cracklib-dict)) logan-cracklib-dict )))
+
+(defun logan/open-emacs-org-file()
+  (interactive)
+  (find-file "~/work/personal/.dotfiles/Emacs.org"))
+
+
+(defun logan/open-bash-org-file()
+  (interactive)
+  (find-file "~/work/personal/.dotfiles/Bash.org"))
+
+(defun logan/create-or-open-todays-standup()
+  (interactive)
+  (find-file (format "~/work/frameable/standup/%s.org" (format-time-string "%m%d%y")))
+  (goto-line 1)
+  (let ((firstLine (thing-at-point 'line t)))
+    (when (not (bound-and-true-p firstLine)); (not (string-match "\* yesterday" firstLine))
+      (insert "* yesterday\n\n* today\n")
+      (goto-line 2)
+      (insert "** ")))
+  (split-window-below)
+  (let ((yesterday (logan/get-prior-standup-date(current-time))))
+    (find-file (format "~/work/frameable/standup/%s.org" yesterday))))
+
+
+(defun logan/check-company-holiday(current-day)
+  (interactive)
+  (print (format-time-string "%m%d%y" current-day))
+  (member (format-time-string "%m%d%Y" current-day) logan/work-holidays))
+
+(logan/check-company-holiday (date-to-time "2022-10-10T12:33:05Z"))
+
+(defun logan/get-prior-standup-date(current-day)
+  (interactive)
+  (let ((yesterday (time-subtract current-day (* 24 3600))))
+    (cond ((string-equal (format-time-string "%u" yesterday) "7")
+           (format-time-string "%m%d%y" (time-subtract current-day (* 3 (* 24 3600)))))
+          ((logan/check-company-holiday yesterday)
+           (logan/get-prior-standup-date yesterday))
+          (t
+           (format-time-string "%m%d%y" (time-subtract current-day (* 24 3600)))))))
+
+
+(ert-deftest logan/check-company-holiday ()
+  (should
+   (equal t (listp(logan/check-company-holiday (date-to-time "2022-10-10T12:33:05Z"))))))
+
+(ert-deftest get-standup-test ()
+  (should
+   (equal "093022" (logan/get-prior-standup-date (date-to-time "2022-10-03T12:33:05Z"))))
+  (should
+   (equal "100322" (logan/get-prior-standup-date (date-to-time "2022-10-04T12:33:05Z"))))
+  (should
+   (equal "100722" (logan/get-prior-standup-date (date-to-time "2022-10-11T12:33:05Z"))))
+  (should
+   (equal "101022" (logan/get-prior-standup-date (date-to-time "2022-11-11T12:33:05Z")))))
+
+
+(defun set-mark-and-goto-line (line)
+  "Set mark and prompt for a line to go to."
+  (interactive "NLine: ")
+  (push-mark nil t nil)
+  (goto-line line))
+
+(use-package racket-mode
+  :hook (racket-mode . racket-xp-mode)
+  :ensure t)
+
+(use-package sml-mode)
+
+; https://emacs-lsp.github.io/lsp-mode/page/performance/
+(setq read-process-output-max (* 1024 1024)) ;; 1mb
+(setq gc-cons-threshold 100000000)
+
+(defun logan/lsp-mode-setup ()
+  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+  (lsp-headerline-breadcrumb-mode))
+
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+
+  :hook (
+         (lsp-mode . logan/lsp-mode-setup)
+         (vue-mode . lsp-deferred)
+         (typescripe-mode . lsp)
+         (go-mode . lsp)
+         (js2-mode . lsp))
+  :init
+  (setq lsp-keymap-prefix "C-c l")  ;; Or 'C-l', 's-l'
+  :config
+  (lsp-enable-which-key-integration t)
+  :commands lsp)
+
+(use-package lsp-ui
+   :hook (lsp-mode . lsp-ui-mode)
+   :custom
+   (lsp-ui-doc-position 'bottom))
+
+(use-package lsp-treemacs
+  :after lsp)
+(use-package lsp-ivy)
+
+(straight-use-package
+ '(lsp-volar :type git :host github :repo "jadestrong/lsp-volar"))
+
+(use-package lsp-volar
+   :ensure t
+   :straight t
+   :after lsp-mode)
+
+
+(use-package typescript-mode
+  :mode "\\.ts\\'"
+  :hook (typescript-mode . lsp-deferred)
+  :config
+  (setq typescript-indent-level 2))
+
+(use-package company
+  :after lsp-mode
+  :hook (lsp-mode . company-mode)
+  :bind (:map company-active-map
+              ("<tab>" . company-complete-selection))
+  (:map lsp-mode-map
+        ("<tab>" . company-indent-or-complete-common))
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0))
+
+(use-package company-box
+  :hook (company-mode . company-box-mode))
+
+(use-package vue-mode)
+
+(use-package go-mode
+  :ensure t)
+
+(use-package js2-mode
+  :ensure t
+  :config
+  (setq js2-bounce-indent-flag nil
+        js2-cleanup-whitespace t
+        js2-indent-on-enter-key t)
+
+  (defun run-node-on-current-file ()
+    "Run the current buffer's file with Node.js."
+    (interactive)
+    (when (buffer-file-name)
+      (save-buffer)  ;; Save the file
+      (compile (concat "node " (buffer-file-name)))))
+
+  (define-key js2-mode-map (kbd "<f5>") 'run-node-on-current-file)
+
+  :init
+  (setq js2-mirror-mode nil)
+  ;;      (setq js2-mode-indent-ignore-first-tab nil)
+  (setq js2-strict-inconsistent-return-warning nil)
+  (setq js2-strict-missing-semi-warning nil)
+  (setq js2-basic-offset 2)
+  (setq js-switch-indent-offset 2)
+
+  ;;js settings (for json)
+  (setq js-indent-level 2)
+
+  (setq-default indent-tabs-mode nil)
+
+
+  (setq js-basic-indent 2)
+  (setq-default js2-basic-indent 2
+                js2-basic-offset 2
+                js2-auto-indent-p t
+                js2-cleanup-whitespace t
+                js2-enter-indents-newline t
+                js2-indent-on-enter-key t
+                js2-global-externs (list "window" "module" "require" "buster" "sinon" "assert" "refute" "setTimeout" "clearTimeout" "setInterval" "clearInterval" "location" "__dirname" "console" "JSON" "jQuery" "$"))
+
+  (add-hook 'js2-mode-hook
+            (lambda ()
+              (push '("function" . ?ƒ) prettify-symbols-alist)))
+
+  (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode)))
+
+
+(use-package web-mode
+  :ensure t
+  :init
+  (setq web-mode-engines-alist
+        '(("ctemplate"    . "\\.html\\'")
+          ("ctemplate"    . "\\.vue\\'")
+          ("ctemplate"    . "\\.html.erb\\'")))
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-enable-auto-indentation nil)
+  (setq web-mode-script-padding 0)
+  (setq web-mode-comment-style 2)
+  (setq web-mode-style-padding 2))
+
+(add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.hbs\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.vue\\'" . web-mode))
+
+(define-prefix-command 'logan-map)
+
+(global-set-key (kbd "M-g") 'set-mark-and-goto-line)
+(global-set-key (kbd "s-s") 'logan-map)
+
+(define-key logan-map (kbd "t t") 'counsel-load-theme)
+(define-key logan-map (kbd "t s") 'hydra-text-scale/body)
+
+(define-key logan-map (kbd "r s") 'logan/random-string)
+
+(define-key logan-map (kbd "u e") 'logan/open-emacs-org-file)
+(define-key logan-map (kbd "u b") 'logan/open-bash-org-file)
+(define-key logan-map (kbd "u s") 'logan/create-or-open-todays-standup)
+
+
+(use-package hydra)
+
+;; a way to zoom in and out
+(defhydra hydra-text-scale (:timeout 4)
+  "scale text"
+  ("j" text-scale-increase "in")
+  ("k" text-scale-decrease "out")
+  ("d" (text-scale-adjust 0) "default")
+  ("f" nil "finished" :exit t))
+
+;; (use-package evil
+;;   :init
+;;   (setq evil-want-integration t)
+;;   (setq evil-want-keybinding nil)
+;;   (setq evil-want-C-u-scroll t)
+;;   (setq evil-want-C-i-jump nil)
+;;   :config
+;;   (evil-mode 1)
+;;   (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+;;   (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
+
+;;   ;; Use visual line motions even outside of visual-line-mode buffers
+;;   (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+;;   (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+
+;;   (evil-set-initial-state 'messages-buffer-mode 'normal)
+;;   (evil-set-initial-state 'dashboard-mode 'normal))
+
+;; (general-define-key
+;;  "C-M-j" 'counsel-switch-buffer)
+;; ;;
+;; (use-package evil-collection
+;;   :after evil
+;;   :config
+;;   (evil-collection-init))
+
+(use-package magit
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+;; read up on more
+(use-package forge)
+
+(defun logan/org-mode-setup ()
+  (org-indent-mode)
+  (variable-pitch-mode 1) ;; This can affect tables/sql etc
+  (visual-line-mode 1)
+  (dolist (face '((org-level-1 . 1.2)
+                  (org-level-2 . 1.1)
+                  (org-level-3 . 1.05)
+                  (org-level-4 . 1.0)
+                  (org-level-5 . 1.1)
+                  (org-level-6 . 1.1)
+                  (org-level-7 . 1.1)
+                  (org-level-8 . 1.1)))
+    ;; (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+    (set-face-attribute (car face) nil :weight 'regular :height (cdr face)))
+  (dolist (face '(org-table org-code org-block org-date))
+    (set-face-attribute face nil :inherit 'fixed-pitch))
+  (setq evil-auto-ident nil))
+
+;; org notifier look into
+(use-package org
+  :hook (org-mode . logan/org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾"
+        org-hide-emphasis-markers t)
+  (setq org-agenda-start-with-mode t)
+  (setq org-log-done 'time)
+  (setq org-log-into-drawer t)
+;;  (setq org-agenda-files
+;;	'("~/work/personal/emacs/org-files/Tasks.org"
+;;	  "~/work/personal/emacs/org-files/Birthdays.org"))
+  (logan/org-mode-setup))
+
+(use-package org-bullets
+  :after org
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+;; this will disable line numbers
+(defun logan/org-mode-visual-fill ()
+  (setq visual-fill-column-width 100
+        visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :hook (org-mode . logan/org-mode-visual-fill))
+
+(use-package vterm
+  :ensure t)
+
+(require 'org-tempo)
+
+(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("py" . "src python"))
+(add-to-list 'org-structure-template-alist '("sh" . "src bash"))
+
+;; (use-package shell-maker
+;;   :straight (:host github :repo "xenodium/chatgpt-shell" :files ("shell-maker.el")))
+
+;; (use-package chatgpt-shell
+;; :ensure t
+;; :config
+;; (setq chatgpt-shell-openai-key (getenv "OPENAI_API_KEY"))
+;; (setq chatgpt-shell-api-url-path "/v1/chat/completions")
+;; (setq chatgpt-shell-debug t)
+;; (unless (file-directory-p (getenv "OPENAI_TMP"))
+;;   (make-directory (getenv "OPENAI_TMP") t))
+;; (setq temporary-file-directory (getenv "OPENAI_TMP"))
+;; :straight (:host github :repo "xenodium/chatgpt-shell" :files ("chatgpt-shell.el")))
+
+  ;; You can also set other options if needed
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (perl . t )
+   (gnuplot .t )
+   (shell .t )
+   (python . t )))
+
+(setq org-confirm-babel-evaluate nil)
