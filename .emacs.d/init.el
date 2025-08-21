@@ -78,10 +78,10 @@
 
 ; This sets the alpha channel (transparency) for background images
 ; (need to have compton running and feh)  
-(set-frame-parameter (selected-frame) 'alpha '(95 .  95))
-(add-to-list 'default-frame-alist '(alpha . (90. 90)))
-(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+;; (set-frame-parameter (selected-frame) 'alpha '(95 .  95))
+;; (add-to-list 'default-frame-alist '(alpha . (90. 90)))
+;; (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+;; (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; disable line numbers in certain modes
 (dolist (mode '(org-mode-hook
@@ -105,16 +105,18 @@
     ;; Currently not used
   (defvar logan/default-font-size 180)
   (defvar logan/default-variable-font-size 180)
+      ;; Currently not used
+    (defvar logan/default-font-size 180)
+    (defvar logan/default-variable-font-size 180)
 
-  (if (not (eq system-type 'darwin))
+    (if (not (eq system-type 'darwin))
+	(progn
+	  (set-face-attribute 'variable-pitch nil :font "FreeSerif" :height 130 :weight 'regular)
+	  (set-face-attribute 'default nil :font "Jet Brains Mono" :height 130)
+	  (set-face-attribute 'fixed-pitch nil :font "Jet Brains Mono" :height 130))
       (progn
-        (set-face-attribute 'variable-pitch nil :font "FreeSerif" :height 130 :weight 'regular)
-        (set-face-attribute 'default nil :font "Jet Brains Mono" :height 130)
-        (set-face-attribute 'fixed-pitch nil :font "Jet Brains Mono" :height 130))
-    (progn
-        (set-face-attribute 'default nil :font "JetBrains Mono" :height 130)
-        (set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 130)))
-
+	  (set-face-attribute 'default nil :font "JetBrains Mono" :height 130)
+	  (set-face-attribute 'fixed-pitch nil :font "JetBrains Mono" :height 130)))
 
   (use-package rainbow-delimiters
     :hook (prog-mode . rainbow-delimiters-mode))
@@ -316,6 +318,10 @@
    :custom
    (lsp-ui-doc-position 'bottom))
 
+
+(add-hook 'before-save-hook #'lsp-organize-imports)
+(add-hook 'before-save-hook #'lsp-format-buffer)
+
 (use-package lsp-treemacs
   :after lsp)
 (use-package lsp-ivy)
@@ -336,15 +342,17 @@
   (setq typescript-indent-level 2))
 
 (use-package company
-  :after lsp-mode
-  :hook (lsp-mode . company-mode)
-  :bind (:map company-active-map
-              ("<tab>" . company-complete-selection))
-  (:map lsp-mode-map
-        ("<tab>" . company-indent-or-complete-common))
+  :hook (prog-mode . company-mode)
+  :bind
+  (:map company-active-map
+        ("<tab>" . company-complete-selection)
+        ("C-n"   . company-select-next)
+        ("C-p"   . company-select-previous))
   :custom
   (company-minimum-prefix-length 1)
-  (company-idle-delay 0.0))
+  (company-idle-delay 0.0)
+  :config
+  (setq company-backends '(company-capf)))
 
 (use-package company-box
   :hook (company-mode . company-box-mode))
@@ -352,6 +360,10 @@
 (use-package vue-mode)
 
 (use-package go-mode
+  :config
+  (setq gofmt-command "goimports")
+  (add-hook 'before-save-hook 'gofmt-before-save)
+
   :ensure t)
 
 (use-package js2-mode
